@@ -37,9 +37,65 @@ d = wd.Chrome(
 
 # adjust these params
 
-search_list = ['makeamericagreatagain','alllivesmatter','buildthewall']
-remove_list = ['blacklivesmatter','blackouttuesday','georgefloyd','blackoutday2020', 'justiceforgeorgefloyd']
-search_len = 5
+spc_search = [
+    'tokyospc',
+    'nycspc',
+    'myspc',
+    'magnumphotos',
+    'myspcstory',
+    'spicollective',
+    'everydayeverywhere',
+    'storyofthestreet',
+    'everybodystreet',
+    'streetizm',
+    'life_is_street',
+    'eyeshotmag',
+    'voidtokyo'
+]
+bnw_search = [
+    'friendsinbnw',
+    'streetphoto_bnw',
+    'bnwstreet'
+]
+tokyo_search = [
+    'tokyospc',
+    'voidtokyo',
+]
+fuji_search = [
+    'x100f',
+    'fujifeed',
+]
+gr_search = [
+    'ricohgr'
+]
+eva_search = [
+   'animecover','evangelion','エヴァンゲリオン','animepiano','pianocover','pianist','guitarcover', 
+]
+nyc_search = [
+    'newyorkcity',
+    'nyc'
+]
+tokyo_search = [
+    'tokyo',
+    '東京'
+]
+pj_search = ['protest','onassignment','photojournalism']
+cornell_search = [
+    'cornell','ithacaisgorges'
+]
+
+
+
+search_list = spc_search+fuji_search+tokyo_search
+search_list = pj_search+spc_search[1:-1]+fuji_search
+search_list = cornell_search+gr_search+spc_search
+
+# search_list = fuji_search+['ithaca','cornell','tokyospc']
+# search_list = ['tokyo']
+
+
+remove_list = ['instagram','urbanphotography','photographer']
+search_len = len(search_list)
 
 if args.test:
     search_list = ['instagram']
@@ -49,6 +105,7 @@ for s in range(search_len):
     print('Searching #' + search_list[s])
     try:
         d.get(explore_url+search_list[s])
+        # print(d.page_source)
     except:
         continue
     b = bs(d.page_source,'html.parser')
@@ -77,7 +134,7 @@ for s in range(search_len):
         img_soup = bs(img_page.text, 'html.parser')
 
         [tag_list.append(c.get('content')) for c in img_soup.find_all('meta',attrs={'property':'instapp:hashtags'})]
-        print(tag_list)
+        # print(tag_list)
 
         # if (not cmt is None):
         #     splt_str = re.split('(#)',cmt)
@@ -141,10 +198,18 @@ for s in range(search_len):
 
 # [tag_list.remove(t) for t in search_list]
 tag_list = [t for t in tag_list if t not in search_list]
+print(len(tag_list))
 # get the 25 most used tags plus search list
-top_tags = list(list(zip(*Counter(tag_list).most_common(30-len(search_list))))[0])+search_list
+top_tags = list(list(zip(*Counter(tag_list).most_common(30-search_len)))[0])
+# top_tags = list(list(zip(*Counter(tag_list).most_common()))[0])
+
+print(top_tags)
+len_tt = len(top_tags)
+# len_tt = len_tt//4
+# top_tags = top_tags[(len_tt-(30-len(search_list))):len_tt]
 # print(top_tags)
 shuffle(top_tags)
+top_tags = search_list[:search_len]+top_tags
 print('\n')
 print('\n.'.join(['']*6))
 print("#"+" #".join(top_tags))
